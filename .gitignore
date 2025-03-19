@@ -1,3 +1,19 @@
+# Pedro
+## Directories
+.idea/
+.venv/
+.terraform/
+tmp/
+
+## Files
+.DS_Store
+.env
+.terraform*
+terraform.tfstate
+terraform.tfstate.backup
+.tfstate
+.tfstate*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
