@@ -29,3 +29,8 @@ variable "memory" {
 variable "cpu" {
   default = "1"
 }
+
+#---- ENV VARIABLES
+variable "llm_prompt_path" {
+  default = "gs://frontto-whatsapp/prompts/openai-latest.md"
+}

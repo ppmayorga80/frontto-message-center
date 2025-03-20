@@ -39,6 +39,7 @@ resource "google_cloudfunctions2_function" "function" {
     # ✅ Define your environment variables here
     environment_variables = {
       PROJECT_ID = var.project_id
+      LLM_PROMPT_PATH = var.llm_prompt_path
     }
 
 
