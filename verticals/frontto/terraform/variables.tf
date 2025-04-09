@@ -1,5 +1,5 @@
 variable "project_id" {
-  default = "sistemap-msg"
+  default = "frontto-message-center"
 }
 
 variable "region" {
@@ -30,7 +30,18 @@ variable "cpu" {
   default = "1"
 }
 
+
 #---- ENV VARIABLES
 variable "llm_prompt_path" {
-  default = "gs://frontto-whatsapp/prompts/openai-latest.md"
+  default = "gs://fn-frontto-whatsapp/prompts/openai-latest.md"
+}
+variable "llm_platform" {
+  default = "openai"
+}
+variable "llm_model" {
+  default = "gpt-4o-mini"
+}
+
+variable "messages_path_fmt" {
+  default = "gs://fn-frontto-whatsapp/messages/{phone}.jsonl"
 }

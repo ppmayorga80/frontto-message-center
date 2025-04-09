@@ -34,12 +34,15 @@ resource "google_cloudfunctions2_function" "function" {
   }
 
   service_config {
-    service_account_email = google_service_account.my_service_account.email
+    service_account_email = google_service_account.function_sa.email
 
     # ✅ Define your environment variables here
     environment_variables = {
       PROJECT_ID = var.project_id
+      LLM_PLATFORM = var.llm_platform
+      LLM_MODEL = var.llm_model
       LLM_PROMPT_PATH = var.llm_prompt_path
+      MESSAGES_PATH_FMT = var.messages_path_fmt
     }
 
 

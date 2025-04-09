@@ -221,3 +221,4 @@ class Jsonl:
                 fp.write(content)
 
             return len(content)
+
