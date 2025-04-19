@@ -23,7 +23,7 @@ variable "max_instances" {
 }
 
 variable "memory" {
-  default = "128Mi"
+  default = "256Mi"
 }
 
 variable "cpu" {
@@ -32,14 +32,14 @@ variable "cpu" {
 
 
 #---- ENV VARIABLES
-variable "llm_prompt_path" {
-  default = "gs://fn-frontto-whatsapp/prompts/openai-latest.md"
-}
 variable "llm_platform" {
   default = "openai"
 }
 variable "llm_model" {
   default = "gpt-4o-mini"
+}
+variable "llm_prompt_path" {
+  default = "gs://fn-frontto-whatsapp/prompts/openai-latest.md"
 }
 
 variable "messages_path_fmt" {

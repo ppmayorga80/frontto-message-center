@@ -1,5 +1,7 @@
 import logging
+
 logging.basicConfig(level=logging.INFO)
+
 
 def lprint(msg, level="error"):
     if level == "warning":
@@ -9,9 +11,12 @@ def lprint(msg, level="error"):
     else:
         logging.info(str(msg))
 
-COUNTER=0
+
+COUNTER = 0
+
+
 class LPrint:
-    def __init__(self, name:str="", level="error"):
+    def __init__(self, name: str = "", level="error"):
         global COUNTER
         COUNTER += 1
         self.counter = COUNTER
@@ -31,11 +36,11 @@ class LPrint:
 
 if __name__ == "__main__":
     with LPrint("Setup") as p:
-        x=1
-        y=x**2
+        x = 1
+        y = x ** 2
         p.log("peter")
 
     with LPrint("Last step") as p:
-        x=1
-        y=x**2
-        print(x,y)
+        x = 1
+        y = x ** 2
+        print(x, y)

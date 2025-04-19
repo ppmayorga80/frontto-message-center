@@ -6,11 +6,10 @@ import os
 import logging
 from multiprocessing import cpu_count, Pool
 from itertools import count
-from typing import Optional, Type, TypeVar, Union
+from typing import Optional, TypeVar, Union
 
 import json
 import smart_open
-
 
 T = TypeVar("T")
 
@@ -128,7 +127,7 @@ class Jsonl:
         # 2 *** create directory if necessary ***
         create_dir_fn = lambda x: os.makedirs(
             os.path.dirname(x), exist_ok=True) if os.path.abspath(
-                path).startswith('/') else ""
+            path).startswith('/') else ""
         create_dir_fn(path)
 
         # 3. open the file if writing or append mode
@@ -211,7 +210,7 @@ class Jsonl:
             # *** create directory if necessary ***
             create_dir_fn = lambda x: os.makedirs(
                 os.path.dirname(x), exist_ok=True) if os.path.abspath(
-                    path).startswith('/') else ""
+                path).startswith('/') else ""
             create_dir_fn(path)
 
             msg = f"writting content to '{path}'"
@@ -221,4 +220,3 @@ class Jsonl:
                 fp.write(content)
 
             return len(content)
-

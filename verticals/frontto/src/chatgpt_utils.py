@@ -1,9 +1,9 @@
-import os
 from openai import OpenAI
 from get_secret import get_secret
 
+
 class ChatgptUtils:
-    def __init__(self, api_key:str, model_name:str="gpt-4o-mini"):
+    def __init__(self, api_key: str, model_name: str = "gpt-4o-mini"):
         self.client = OpenAI(api_key=api_key)
         self.model_name = model_name
 
@@ -36,5 +36,5 @@ if __name__ == "__main__":
     PROJECT_ID = "frontto-message-center"
     api_key = get_secret("openai-api-key", project_id=PROJECT_ID)
     gpt = ChatgptUtils(api_key=api_key)
-    con,res = gpt.get_content_and_json_response("Cual es la mejor pelicula de la serie star wars?")
+    con, res = gpt.get_content_and_json_response("Cual es la mejor pelicula de la serie star wars?")
     print(con)
