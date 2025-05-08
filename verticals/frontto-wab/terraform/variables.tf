@@ -15,7 +15,7 @@ variable "fn_name" {
 }
 
 variable "timeout" {
-  default = 60
+  default = 120
 }
 
 variable "max_instances" {
@@ -33,10 +33,10 @@ variable "cpu" {
 
 #---- ENV VARIABLES
 variable "llm_platform" {
-  default = "openai"
+  default = "GEMINI"
 }
 variable "llm_model" {
-  default = "gpt-4o-mini"
+  default = "gemini"
 }
 variable "llm_prompt_path" {
   default = "gs://fn-frontto-whatsapp/prompts/openai-latest.md"

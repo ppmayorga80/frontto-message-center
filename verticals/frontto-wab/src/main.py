@@ -5,15 +5,11 @@ from random import random
 
 import requests
 import functions_framework
-from click import prompt
 
-from functions_framework import create_app
-
-from get_secret import get_secret
-from utils import fix_phone
+from cloud.get_secret import get_secret
 from facebook import try_to_process_verification, all_phone_and_messages
 from history import History
-from chatgpt_utils import ChatgptUtils
+from ai.llm import Llm, LlmPlatform
 from lprint import lprint
 
 lprint("STARTING SERVICES...")
@@ -28,7 +24,6 @@ AVERAGE_CHARACTERS_PER_SECOND = float(os.environ.get("AVERAGE_WORDS_PER_MINUTE",
 ACCESS_TOKEN = get_secret("wa-access-token", project_id=PROJECT_ID)
 PHONE_NUMBER_ID = get_secret("wa-phone-id", project_id=PROJECT_ID)
 VERIFY_TOKEN = get_secret("wa-verify-token", project_id=PROJECT_ID)
-LLM_API_KEY = get_secret("openai-api-key", project_id=PROJECT_ID)
 
 # BUILD THE FORMATTED GLOBAL VARIABLES
 WHATSAPP_API_URL = f"https://graph.facebook.com/v22.0/{PHONE_NUMBER_ID}/messages"
@@ -87,7 +82,8 @@ def whatsapp_webhook(request):
 
 def process_history_with_ai(phone: str, history: list[History]) -> History:
     if LLM_PLATFORM == "openai":
-        gpt = ChatgptUtils(api_key=LLM_API_KEY, model_name=LLM_MODEL)
+        platform = LlmPlatform(LLM_PLATFORM)
+        llm = Llm(platform=platform, model_name=LLM_MODEL)
 
         prompt_text = history[0].message
         list_of_messages = f"\n\n\n".join([f"[{k+1}:{xk.dt}:{xk.who}]\n{xk.message}" for k, xk in enumerate(history[1:])])
@@ -95,12 +91,12 @@ def process_history_with_ai(phone: str, history: list[History]) -> History:
         lprint(f">>>>> FULL MESSAGE:\n{full_message}")
 
         try:
-            answer, _ = gpt.get_content_and_json_response(full_message)
+            answer = llm.get_answer(prompt=full_message)
         except Exception as e:
             lprint(f"LLM>>>>> ERROR: {e}")
             answer = "<<agente no disponible>>"
+
         last_answer = History(phone=phone, message=answer)
-        last_answer.clean()
         return last_answer
 
 
