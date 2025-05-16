@@ -1,10 +1,11 @@
 import json
 import requests
+
 from ai.llm_base import LlmBase
 
 
-class GeminiUtils(LlmBase):
-    def __init__(self, api_key: str, model_name: str = "gemini"):
+class LLmGemini(LlmBase):
+    def __init__(self, api_key: str, model_name: str = "gemini-2.5-flash-preview-04-17"):
         super().__init__(api_key, model_name)
         # Include the API key as a query parameter to the endpoint (this is the typical approach for PaLM endpoints).
         # Replace with the correct URL for your specific model/version if needed.
@@ -91,3 +92,4 @@ class GeminiUtils(LlmBase):
 
         except Exception as e:
             return None
+

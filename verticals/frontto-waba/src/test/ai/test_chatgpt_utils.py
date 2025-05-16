@@ -1,5 +1,5 @@
 from cloud.get_secret import get_secret
-from ai.chatgpt_utils import ChatgptUtils
+from ai.llm_openai import ChatgptUtils
 
 
 def test_chatgpt():

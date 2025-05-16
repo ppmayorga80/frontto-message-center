@@ -1,0 +1,61 @@
+[
+  {
+    "app": "cleverconvergia",
+    "timestamp": 1746766211370,
+    "version": 2,
+    "type": "message",
+    "payload": {
+      "id": "wamid.HBgNNTIxODEyODYzMzAyORUCABIYFDNBM0JENzU5M0M3REMwNThERTMwAA==",
+      "source": "5218128633029",
+      "type": "text",
+      "payload": {
+        "text": "Hello world"
+      },
+      "sender": {
+        "phone": "5218128633029",
+        "name": "Pedro",
+        "country_code": "52",
+        "dial_code": "18128633029"
+      }
+    }
+  },
+  {
+    "app": "cleverconvergia",
+    "timestamp": 1746767438308,
+    "version": 2,
+    "type": "message-event",
+    "payload": {
+      "id": "377e78a0-c7d6-4b97-80dc-5bcb118e4c1e",
+      "gsId": "d5c177c6-e0bd-46e6-89cb-d5e8e958102c",
+      "type": "read",
+      "destination": "5218128633029",
+      "payload": {
+        "ts": 1746767437
+      }
+    }
+  },
+  {
+    "app": "cleverconvergia",
+    "timestamp": 1746767546130,
+    "version": 2,
+    "type": "message-event",
+    "payload": {
+      "id": "b54984a2-9231-4ef3-bf7a-e7728f7e2bcd",
+      "gsId": "db42d9ad-a18c-4992-b46b-a2e3d2a7e58e",
+      "type": "sent",
+      "destination": "5218128633029",
+      "payload": {
+        "ts": 1746767544
+      },
+      "conversation": {
+        "id": "a105e2fced36c85563048021f2efa90a",
+        "expiresAt": 1746850860,
+        "type": "service"
+      },
+      "pricing": {
+        "policy": "CBP",
+        "category": "service"
+      }
+    }
+  }
+]

@@ -2,17 +2,21 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
-
-def lprint(msg, level="error"):
-    if level == "warning":
-        logging.warning(str(msg))
-    elif level == "error":
-        logging.error(str(msg))
-    else:
-        logging.info(str(msg))
-
-
 COUNTER = 0
+
+
+def lprint(msg: str, level="error"):
+    global COUNTER
+    COUNTER += 1
+
+    msg = f"#{COUNTER}#: {msg}"
+    if level == "error":
+        if level == "warning":
+            logging.warning(str(msg))
+        elif level == "error":
+            logging.error(str(msg))
+        else:
+            logging.info(str(msg))
 
 
 class LPrint:

@@ -1,5 +1,5 @@
 from cloud.get_secret import get_secret
-from ai.deepseek_utils import DeepseekUtils
+from ai.llm_deepseek import DeepseekUtils
 
 def test_deepseek_utils_list():
     PROJECT_ID = "frontto-message-center"

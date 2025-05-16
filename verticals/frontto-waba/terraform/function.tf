@@ -28,7 +28,7 @@ resource "google_cloudfunctions2_function" "function" {
 
   build_config {
     runtime     = "python310"
-    entry_point = "whatsapp_webhook"
+    entry_point = "webhook"
     source {
       storage_source {
         bucket = google_storage_bucket.function_bucket.name

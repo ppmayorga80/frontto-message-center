@@ -1,9 +1,9 @@
 import os
 from enum import Enum
 
-from ai.chatgpt_utils import ChatgptUtils
-from ai.deepseek_utils import DeepseekUtils
-from ai.gemini_utils import GeminiUtils
+from ai.llm_openai import ChatgptUtils
+from ai.llm_deepseek import DeepseekUtils
+from ai.llm_gemini import GeminiUtils
 from ai.llm_base import LlmBase
 from cloud.get_secret import get_secret
 

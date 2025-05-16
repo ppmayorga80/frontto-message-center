@@ -1,8 +1,8 @@
 from openai import OpenAI
-from ai.chatgpt_utils import ChatgptUtils
+from ai.llm_openai import LlmOpenAi
 
 
-class DeepseekUtils(ChatgptUtils):
+class LlmDeepseek(LlmOpenAi):
     def __init__(self, api_key: str, model_name: str = "deepseek-chat"):
         super().__init__(api_key, model_name)
 

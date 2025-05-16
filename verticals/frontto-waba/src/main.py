@@ -1,16 +1,11 @@
 import os
-import json
-import time
-from random import random
 
 import requests
 import functions_framework
 
 from cloud.get_secret import get_secret
-from facebook import try_to_process_verification, all_phone_and_messages
-from history import History
-from ai.llm import Llm, LlmPlatform
 from lprint import lprint
+from utils import fix_phone
 
 lprint("STARTING SERVICES...")
 
@@ -18,98 +13,84 @@ lprint("STARTING SERVICES...")
 PROJECT_ID = os.environ.get("PROJECT_ID", "")
 LLM_PLATFORM = os.environ.get("LLM_PLATFORM", "")
 LLM_MODEL = os.environ.get("LLM_MODEL", "")
-AVERAGE_CHARACTERS_PER_SECOND = float(os.environ.get("AVERAGE_WORDS_PER_MINUTE", "48"))*5/60.0
+AVERAGE_CHARACTERS_PER_SECOND = float(os.environ.get("AVERAGE_WORDS_PER_MINUTE", "48")) * 5 / 60.0
 
 # Get credentials from Secret Manager
-ACCESS_TOKEN = get_secret("wa-access-token", project_id=PROJECT_ID)
-PHONE_NUMBER_ID = get_secret("wa-phone-id", project_id=PROJECT_ID)
-VERIFY_TOKEN = get_secret("wa-verify-token", project_id=PROJECT_ID)
+WABA_APIKEY = get_secret("waba-apikey", project_id=PROJECT_ID)
+WABA_ID = get_secret("waba-id", project_id=PROJECT_ID)
+WABA_PHONE = get_secret("waba-phone", project_id=PROJECT_ID)
+WA_VERIFY_TOKEN = get_secret("wa-verify-token", project_id=PROJECT_ID)
 
 # BUILD THE FORMATTED GLOBAL VARIABLES
-WHATSAPP_API_URL = f"https://graph.facebook.com/v22.0/{PHONE_NUMBER_ID}/messages"
+GRAPH_API_URL = f"https://graph.facebook.com/v17.0/{WABA_PHONE}/messages"
 lprint("PRECONFIGURATION DONE.")
 
 
+def send_whatsapp_message(to_number: str, text: str):
+    """
+    Send a simple text message via WhatsApp Business API.
+    """
+    headers = {
+        "Authorization": f"Bearer {WABA_APIKEY}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "messaging_product": "whatsapp",
+        "to": to_number,
+        "type": "text",
+        "text": {"body": text}
+    }
+    resp = requests.post(GRAPH_API_URL, headers=headers, json=payload)
+    resp.raise_for_status()
+    return resp.json()
+
+
 @functions_framework.http
-def whatsapp_webhook(request):
-    lprint("1. INSIDE FUNCTION.")
+def webhook(request):
+    """
+    HTTP Cloud Function:
+      - GET: verify webhook with Facebook
+      - POST: handle inbound WhatsApp messages & status updates
+    """
 
-    # check if facebook tries to verify the hook with the token
-    lprint("2. GET: VERIFICATION TOKEN")
-    flag, response_challenge, response_code = try_to_process_verification(request, VERIFY_TOKEN)
-    if flag:
-        return response_challenge, response_code
+    lprint(f"Method: {request.method}")
 
-    lprint("3. POST: GET ALL MESSAGES")
-    # read all messages in the request if applicable
-    phone_and_messages = all_phone_and_messages(request)
-    lprint(f"4. POST: {len(phone_and_messages)} message(s)")
-    if phone_and_messages:
-        # for every message
-        last_status_code = 0
-        for phone, message in phone_and_messages.items():
-            t1 = time.perf_counter()
-            # 1. read the history from phone number
-            history: list[History] = History.read_history_and_update(phone=phone, message=message)
-            # 2. process the history with AI and clean
-            last_answer = process_history_with_ai(phone=phone, history=history)
-            last_answer.clean()
-            # 3. add the last history message to the history list and save the result
-            history.append(last_answer)
-            History.write_history(phone=phone, history=history)
-            # 4. compute elapsed time in seconds and decide how long to wait before send the message
-            t2 = time.perf_counter()
-            dt = t2 - t1
-            message_length = len(last_answer.message)
-            expected_duration = message_length / AVERAGE_CHARACTERS_PER_SECOND
-            # pause a little if necessary before send a reply
-            if dt < expected_duration:
-                # never exceeds 1min +- 7 sec
-                seconds_to_wait = min(expected_duration - dt, 60) + random() * 7.0
-                lprint(f"4.1 WAIT: {seconds_to_wait:0.2f} seconds before reply")
-                time.sleep(seconds_to_wait)
+    # --- Verification handshake ---
+    if request.method == "GET":
+        mode = request.args.get("hub.mode")
+        token = request.args.get("hub.verify_token")
+        challenge = request.args.get("hub.challenge")
+        if mode == "subscribe" and token == WA_VERIFY_TOKEN:
+            return challenge, 200
+        return "Verification token mismatch", 403
 
-            # 5. senf a reply message through whatsapp api
-            lprint(f"4.2 BEFORE SEND REPLY: {last_answer.message}")
-            response, status_code = send_reply(phone, last_answer.message)
-            last_status_code = status_code
-            lprint(f"4.3 LAST RESPONSE: {last_status_code}")
+    # --- Incoming events ---
+    if request.method == "POST":
+        # parse JSON body
+        try:
+            data = request.get_json(force=True)
+        except Exception as e:
+            return f"Invalid JSON: {e}", 204
 
-        return "OK", last_status_code
-    else:
-        return "No messages received", 200
+        lprint(f"Data: {data}")
+        # TODO: save data as a raw data
 
+        sender = data.get("payload", {}).get("source", "")
+        sender = fix_phone(sender)
+        text = data.get("payload", {}).get("payload", {}).get("text", "")
 
-def process_history_with_ai(phone: str, history: list[History]) -> History:
-    if LLM_PLATFORM == "openai":
-        platform = LlmPlatform(LLM_PLATFORM)
-        llm = Llm(platform=platform, model_name=LLM_MODEL)
+        lprint(f"Sender: {sender}")
+        lprint(f"Text: {text}")
 
-        prompt_text = history[0].message
-        list_of_messages = f"\n\n\n".join([f"[{k+1}:{xk.dt}:{xk.who}]\n{xk.message}" for k, xk in enumerate(history[1:])])
-        full_message = f"{prompt_text}\n{list_of_messages}"
-        lprint(f">>>>> FULL MESSAGE:\n{full_message}")
+        if not sender or not text:
+            return f"Invalid Message with data: {data}", 204
 
         try:
-            answer = llm.get_answer(prompt=full_message)
+            send_whatsapp_message(sender, f"You said: {text}")
         except Exception as e:
-            lprint(f"LLM>>>>> ERROR: {e}")
-            answer = "<<agente no disponible>>"
+            lprint(f"Error: {e}")
 
-        last_answer = History(phone=phone, message=answer)
-        return last_answer
+        return f"EVENT_RECEIVED WITH DATA: {data}", 200
 
-
-def send_reply(to, text):
-    headers = {"Authorization": f"Bearer {ACCESS_TOKEN}", "Content-Type": "application/json"}
-    payload = {"messaging_product": "whatsapp", "to": to, "type": "text", "text": {"body": text}}
-    data = json.dumps(payload)
-    try:
-        response = requests.post(WHATSAPP_API_URL, headers=headers, data=data)
-        status_code = response.status_code
-    except Exception as e:
-        response = None
-        status_code = 500
-        lprint(f"ERROR: {e}")
-    return response, status_code
-
+    # unsupported methods
+    return f"Method Not Allowed: {request.method}", 204

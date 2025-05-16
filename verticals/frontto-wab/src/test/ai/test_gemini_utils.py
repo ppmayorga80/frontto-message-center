@@ -1,4 +1,4 @@
-from ai.gemini_utils import GeminiUtils
+from ai.llm_gemini import GeminiUtils
 from cloud.get_secret import get_secret
 import json
 

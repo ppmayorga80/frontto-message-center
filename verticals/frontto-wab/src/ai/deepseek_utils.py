@@ -1,5 +1,5 @@
 from openai import OpenAI
-from ai.chatgpt_utils import ChatgptUtils
+from ai.llm_openai import ChatgptUtils
 
 
 class DeepseekUtils(ChatgptUtils):

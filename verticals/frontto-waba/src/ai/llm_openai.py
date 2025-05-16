@@ -2,7 +2,7 @@ from openai import OpenAI
 from ai.llm_base import LlmBase
 
 
-class ChatgptUtils(LlmBase):
+class LlmOpenAi(LlmBase):
     def __init__(self, api_key: str, model_name: str = "gpt-4o-mini"):
         super().__init__(api_key, model_name)
         self.client = OpenAI(api_key=api_key)
@@ -10,14 +10,14 @@ class ChatgptUtils(LlmBase):
     def list_models(self):
         return self.client.models.list()
 
-    def get_answer_and_json_response(self, text: str) -> tuple[str, dict]:
+    def get_answer_and_json_response(self, prompt: str) -> tuple[str, dict]:
         try:
             response = self.client.chat.completions.create(
                 model=self.model_name,
                 messages=[
                     {
                         "role": "user",
-                        "content": text,
+                        "content": prompt,
                     }
                 ],
             )
