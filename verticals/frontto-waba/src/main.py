@@ -4,7 +4,7 @@ import requests
 import functions_framework
 
 from cloud.get_secret import get_secret
-from lprint import lprint
+from utils.lprint import lprint
 from utils import fix_phone
 
 lprint("STARTING SERVICES...")

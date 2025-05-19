@@ -7,10 +7,10 @@ import requests
 import functions_framework
 
 from cloud.get_secret import get_secret
-from facebook import try_to_process_verification, all_phone_and_messages
+from utils.facebook import try_to_process_verification, all_phone_and_messages
 from history import History
 from ai.llm import Llm, LlmPlatform
-from lprint import lprint
+from utils.lprint import lprint
 
 lprint("STARTING SERVICES...")
 

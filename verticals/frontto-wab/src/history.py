@@ -2,7 +2,7 @@ from dataclasses import asdict, dataclass
 import os
 import smart_open
 
-from jsonl import Jsonl
+from utils.jsonl import Jsonl
 from utils import curdt
 
 LLM_PROMPT_PATH = os.environ.get("LLM_PROMPT_PATH", "")
